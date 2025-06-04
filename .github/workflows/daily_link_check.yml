@@ -26,4 +26,5 @@ jobs:
       env:
         SMTP_USER: ${{ secrets.SMTP_USER }}
         SMTP_PASS: ${{ secrets.SMTP_PASS }}
-        EMAIL_TO: ${{ secrets.EMAIL_TO }}
+        EMAIL_TO: "raj@dataondisk.com, dahuja@dataondisk.com, akumar@dataondisk.com, naunish@dataondisk.com"
+

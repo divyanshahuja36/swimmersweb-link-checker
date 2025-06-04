@@ -1,0 +1,49 @@
+name: Weekly Lighthouse Audit
+
+on:
+  schedule:
+    - cron: '0 3 * * 0'  # Every Sunday at 8:30 AM IST
+  workflow_dispatch:
+
+jobs:
+  lighthouse:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install Lighthouse
+        run: npm install -g lighthouse
+
+      - name: Run Lighthouse audits
+        run: ./lighthouse_runner.sh
+
+      - name: Send email with reports
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          username: ${{ secrets.SMTP_USER }}
+          password: ${{ secrets.SMTP_PASS }}
+          subject: "📊 Weekly Lighthouse Report - SwimmersWeb"
+          to: ${{ secrets.EMAIL_TO }}
+          from: SwimmersWeb Monitor <${{ secrets.SMTP_USER }}>
+          body: |
+            ✅ Here is your weekly Lighthouse performance report.
+
+            Pages audited:
+            - Home
+            - Register
+            - Login
+            - Profile
+            - Contact
+            (and more...)
+
+            Attached is a ZIP file containing all detailed Lighthouse HTML reports.
+          attachments: lighthouse_reports.zip

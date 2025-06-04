@@ -32,7 +32,8 @@ jobs:
           username: ${{ secrets.SMTP_USER }}
           password: ${{ secrets.SMTP_PASS }}
           subject: "📊 Weekly Lighthouse Report - SwimmersWeb"
-          to: ${{ secrets.EMAIL_TO }}
+          EMAIL_TO: "raj@dataondisk.com, dahuja@dataondisk.com, akumar@dataondisk.com, naunish@dataondisk.com"
+
           from: SwimmersWeb Monitor <${{ secrets.SMTP_USER }}>
           body: |
             ✅ Here is your weekly Lighthouse performance report.

@@ -28,29 +28,39 @@ urls = [
 ]
 
 def check_links(urls):
-    report = []
+    broken = []
+    full_report = []
+
     for url in urls:
         try:
             response = requests.get(url, timeout=10)
-            status = f"{response.status_code} OK" if response.status_code == 200 else f"{response.status_code} ERROR"
-            report.append((url, status, response.elapsed.total_seconds()))
-        except Exception as e:
-            report.append((url, f"Error: {str(e)}", "-"))
-    return report
+            status_code = response.status_code
+            response_time = response.elapsed.total_seconds()
 
-def generate_report(report):
+            if status_code != 200:
+                broken.append(f"{url} - {status_code} ERROR - {response_time}s")
+
+            full_report.append((url, status_code, response_time))
+
+        except Exception as e:
+            broken.append(f"{url} - Error: {str(e)}")
+            full_report.append((url, f"Error: {str(e)}", "-"))
+
+    return full_report, broken
+
+def generate_report(broken_links):
     lines = [
-        "📊 SwimmersWeb - Daily Link Check Report",
+        "🚨 SwimmersWeb - Broken Link Alert",
         f"🕒 Date: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
-        ""
+        "",
+        "❌ The following links are broken:"
     ]
-    for url, status, response_time in report:
-        lines.append(f"{url} - {status} - Response Time: {response_time}s")
+    lines.extend(broken_links)
     return "\n".join(lines)
 
 def send_email(report_text):
     msg = MIMEText(report_text)
-    msg["Subject"] = "SwimmersWeb - Daily Link Health Check"
+    msg["Subject"] = "🚨 SwimmersWeb - Broken Link Detected"
     msg["From"] = os.environ["SMTP_USER"]
     msg["To"] = os.environ["EMAIL_TO"]
 
@@ -59,6 +69,11 @@ def send_email(report_text):
         server.send_message(msg)
 
 if __name__ == "__main__":
-    report = check_links(urls)
-    report_text = generate_report(report)
-    send_email(report_text)
+    full_report, broken_links = check_links(urls)
+
+    if broken_links:
+        report_text = generate_report(broken_links)
+        send_email(report_text)
+        print("🚨 Email sent for broken links.")
+    else:
+        print("✅ All links are healthy. No email sent.")

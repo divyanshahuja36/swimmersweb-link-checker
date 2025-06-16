@@ -1,8 +1,8 @@
-name: Daily Link Health Check
+name: Link Health Check
 
 on:
   schedule:
-    - cron: '0 3 * * *'   # Every day at 3:00 AM UTC (8:30 AM IST)
+    - cron: '0 * * * *'   # Every hour (at minute 0)
   workflow_dispatch:       # Allows manual trigger
 
 jobs:
@@ -27,4 +27,3 @@ jobs:
         SMTP_USER: ${{ secrets.SMTP_USER }}
         SMTP_PASS: ${{ secrets.SMTP_PASS }}
         EMAIL_TO: "raj@dataondisk.com, dahuja@dataondisk.com, akumar@dataondisk.com, naunish@dataondisk.com"
-
